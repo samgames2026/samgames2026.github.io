@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sam Pitylak Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@100..150,300..900&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a gallery catalogue. Each app is an "exhibit" with a large stage and a strip of its worlds. Single dark theme by choice. */
+:root {
+  --ink: #0a0c11;
+  --panel: #12151d;
+  --line: #262b38;
+  --bone: #f1ece1;
+  --mute: #9199ab;
+  --signal: #ff6a2b;
+  --display: "Anybody", "Arial Black", Impact, sans-serif;
+  --body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+.wrap { width: min(1240px, 100% - 40px); margin-inline: auto; }
+.mono { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+
+/* top bar */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+.mark { font-family: var(--display); font-weight: 900; font-stretch: 130%; font-size: 20px; letter-spacing: .02em; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.mark i { width: 12px; height: 12px; background: var(--signal); display: inline-block; transform: rotate(45deg); }
+.nav { display: flex; gap: 26px; flex-wrap: wrap; }
+.nav a { text-decoration: none; }
+.nav a:hover { color: var(--bone); }
+
+/* hero */
+.hero { padding: 72px 0 56px; position: relative; }
+.hero::before { content: ""; position: absolute; right: -8%; top: 10px; width: 520px; height: 520px; max-width: 80vw; background: radial-gradient(closest-side, rgba(255,106,43,.22), rgba(255,106,43,0)); pointer-events: none; }
+.hero h1 { font-family: var(--display); font-weight: 900; font-stretch: 140%; line-height: .86; letter-spacing: -.02em; font-size: clamp(54px, 13.4vw, 190px); text-transform: uppercase; text-wrap: balance; }
+.hero h1 span { display: block; overflow: hidden; padding-bottom: .04em; }
+.hero h1 span b { display: block; font-weight: inherit; animation: rise .9s cubic-bezier(.2,.8,.2,1) both; }
+.hero h1 span:nth-child(2) b { animation-delay: .12s; color: transparent; -webkit-text-stroke: 2px var(--bone); }
+@keyframes rise { from { transform: translateY(40%); } to { transform: none; } }
+.hero-foot { margin-top: 44px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: end; }
+.hero-foot p { font-size: clamp(19px, 2.2vw, 26px); line-height: 1.4; max-width: 34ch; text-wrap: balance; }
+.stats { display: flex; gap: 36px; justify-content: flex-end; }
+.stat strong { display: block; font-family: var(--display); font-stretch: 120%; font-weight: 800; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat .mono { display: block; margin-top: 8px; }
+
+/* exhibits */
+.work-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 24px; }
+.exhibit { padding: 56px 0 24px; }
+.exhibit-top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.exhibit h2 { font-family: var(--display); font-weight: 900; font-stretch: 125%; text-transform: uppercase; line-height: .95; letter-spacing: -.01em; font-size: clamp(34px, 6.2vw, 84px); text-wrap: balance; max-width: 16ch; }
+.exhibit h2 em { font-style: normal; color: var(--signal); }
+.tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; }
+.tag.live { border-color: var(--signal); color: var(--signal); }
+
+.stage { position: relative; aspect-ratio: 1376 / 768; background: var(--panel); border-radius: 6px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 40px 90px -30px rgba(0,0,0,.8); }
+.stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.04); transition: opacity .6s ease, transform 1.2s ease; }
+.stage img.on { opacity: 1; transform: none; }
+.stage-tag { position: absolute; left: 18px; bottom: 16px; padding: 8px 14px; background: rgba(10,12,17,.78); backdrop-filter: blur(8px); border-radius: 4px; display: flex; gap: 12px; align-items: center; }
+.stage-tag .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--signal)); }
+.stage-tag .mono { color: var(--bone); }
+
+.worlds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
+.world { appearance: none; border: 1px solid var(--line); background: var(--panel); color: var(--bone); border-radius: 6px; padding: 0; cursor: pointer; text-align: left; overflow: hidden; font: inherit; transition: border-color .2s, transform .2s; }
+.world:hover { transform: translateY(-3px); border-color: var(--mute); }
+.world[aria-pressed="true"] { border-color: var(--c); box-shadow: 0 0 0 1px var(--c); }
+.world .thumb { display: block; aspect-ratio: 16 / 7; overflow: hidden; }
+.world .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.7) brightness(.75); transition: filter .3s; }
+.world:hover .thumb img, .world[aria-pressed="true"] .thumb img { filter: none; }
+.world .cap { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; }
+.world .cap b { font-family: var(--display); font-stretch: 115%; font-weight: 800; text-transform: uppercase; font-size: 15px; letter-spacing: .02em; }
+
+.detail { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 48px; align-items: start; }
+.detail p { font-size: 19px; max-width: 52ch; color: #d6d1c6; }
+.facts { border-top: 1px solid var(--line); }
+.facts div { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.facts dd { text-align: right; font-weight: 500; }
+.links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 999px; text-decoration: none; font-weight: 600; border: 1px solid var(--bone); transition: background .2s, color .2s; }
+.btn:hover { background: var(--bone); color: var(--ink); }
+.btn.primary { background: var(--signal); border-color: var(--signal); color: #1a0a02; }
+.btn.primary:hover { background: var(--bone); border-color: var(--bone); }
+
+.next { margin: 56px 0 0; border: 1px dashed var(--line); border-radius: 6px; padding: 36px 28px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+.next strong { font-family: var(--display); font-stretch: 120%; font-weight: 800; text-transform: uppercase; font-size: clamp(22px, 3vw, 34px); color: var(--mute); }
+
+footer { margin-top: 96px; border-top: 1px solid var(--line); padding: 28px 0 48px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+
+/* game */
+.stage { aspect-ratio: auto; min-height: clamp(560px, 58vw, 780px); display: grid; }
+.stage > img { z-index: 0; }
+.stage::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(8,10,15,.35), rgba(8,10,15,.78)); z-index: 1; pointer-events: none; }
+.game { position: relative; z-index: 2; align-self: center; justify-self: center; width: min(860px, 100% - 32px); padding: 28px 0; display: flex; flex-direction: column; gap: 22px; text-align: center; }
+.g-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.g-head .mono { color: var(--bone); }
+.g-bar { height: 4px; background: rgba(255,255,255,.18); border-radius: 4px; overflow: hidden; }
+.g-bar i { display: block; height: 100%; width: 0; background: var(--c, var(--signal)); transition: width .4s ease; }
+.g-lead { font-family: var(--display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: 14px; color: var(--c, var(--signal)); }
+.g-opts { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch; }
+.opt { appearance: none; border: 1px solid rgba(255,255,255,.28); background: rgba(10,12,17,.72); backdrop-filter: blur(10px); color: var(--bone); border-radius: 10px; padding: 26px 20px; min-height: 150px; font: 600 clamp(18px, 2.4vw, 24px)/1.3 var(--body); cursor: pointer; transition: transform .2s, border-color .2s, background .2s; text-wrap: balance; }
+.opt:hover:not(:disabled) { transform: translateY(-4px); border-color: var(--c, var(--signal)); }
+.opt:disabled { cursor: default; }
+.opt.picked { background: var(--c, var(--signal)); border-color: var(--c, var(--signal)); color: #10131a; }
+.opt.other { opacity: .45; }
+.g-or { align-self: center; font-family: var(--display); font-stretch: 140%; font-weight: 900; font-size: 22px; width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: var(--bone); color: var(--ink); }
+.g-foot { min-height: 52px; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+.g-foot .btn { cursor: pointer; font: inherit; font-weight: 600; background: rgba(10,12,17,.6); color: var(--bone); }
+.g-foot .btn.primary { background: var(--signal); color: #1a0a02; }
+.g-end h3 { font-family: var(--display); font-stretch: 130%; font-weight: 900; text-transform: uppercase; font-size: clamp(30px, 5vw, 56px); line-height: 1; }
+.g-end p { margin-top: 10px; color: #d6d1c6; }
+.g-list { list-style: none; margin: 20px auto 0; max-width: 560px; text-align: left; background: rgba(10,12,17,.7); border-radius: 10px; padding: 8px 16px; max-height: 220px; overflow: auto; }
+.g-list li { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.g-list li:last-child { border: 0; }
+
+/* about */
+.about { display: grid; grid-template-columns: 1fr 1.3fr; gap: 56px; padding: 64px 0 24px; align-items: start; }
+.about h2, .fb h2 { font-family: var(--display); font-weight: 900; font-stretch: 125%; text-transform: uppercase; line-height: .95; font-size: clamp(34px, 5.4vw, 72px); }
+.about p { font-size: clamp(19px, 2.1vw, 24px); line-height: 1.5; color: #e3ded3; max-width: 46ch; }
+.about p + p { margin-top: 18px; font-size: 17px; color: var(--mute); }
+
+/* feedback station */
+.fb { margin-top: 72px; padding: 40px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(160deg, #141824, #0d1017); position: relative; overflow: hidden; }
+.fb::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 4px); pointer-events: none; }
+.fb-grid { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 28px; }
+.fb-lcd { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--signal); display: flex; gap: 10px; align-items: center; }
+.fb-lcd i { width: 8px; height: 8px; border-radius: 50%; background: var(--signal); animation: blink 1.4s infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+.moods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0; }
+.mood { appearance: none; background: #0a0c11; border: 1px solid var(--line); color: var(--bone); border-radius: 10px; padding: 14px 6px; cursor: pointer; font: 600 13px var(--body); display: flex; flex-direction: column; gap: 6px; align-items: center; transition: transform .15s, border-color .15s, box-shadow .15s; }
+.mood svg { width: 34px; height: 34px; }
+.mood:hover { transform: translateY(-3px); }
+.mood[aria-pressed="true"] { border-color: var(--signal); box-shadow: 0 0 22px -4px var(--signal); }
+.fb label { display: block; margin: 14px 0 6px; }
+.fb input, .fb textarea { width: 100%; background: #0a0c11; border: 1px solid var(--line); color: var(--bone); border-radius: 8px; padding: 12px 14px; font: inherit; }
+.fb textarea { min-height: 120px; resize: vertical; }
+.fb input:focus, .fb textarea:focus { outline: 2px solid var(--signal); outline-offset: 1px; }
+.fb .btn { margin-top: 16px; cursor: pointer; font: inherit; font-weight: 600; }
+.fb-msg { margin-top: 12px; min-height: 24px; font-size: 15px; color: var(--mute); }
+.wall { display: flex; flex-direction: column; gap: 10px; max-height: 430px; overflow: auto; }
+.note { border: 1px solid var(--line); background: #0a0c11; border-radius: 10px; padding: 14px 16px; }
+.note .top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.note p { font-size: 15px; overflow-wrap: anywhere; }
+.empty { color: var(--mute); font-size: 15px; border: 1px dashed var(--line); border-radius: 10px; padding: 18px; }
+
+@media (max-width: 860px) {
+  .about, .fb-grid { grid-template-columns: 1fr; gap: 28px; }
+  .g-opts { grid-template-columns: 1fr; }
+  .g-or { margin: 0 auto; width: 44px; height: 44px; }
+  .opt { min-height: 96px; padding: 18px; }
+  .fb { padding: 24px 18px; }
+}
+
+@media (max-width: 860px) {
+  .hero { padding-top: 48px; }
+  .hero-foot, .detail { grid-template-columns: 1fr; }
+  .stats { justify-content: flex-start; }
+  .worlds { grid-template-columns: repeat(2, 1fr); }
+  .detail { gap: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero h1 span b { animation: none; }
+  .stage img, .world { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="mark" href="#top" id="top"><i></i>SAM PITYLAK</a>
+    <nav class="nav mono" aria-label="Sections">
+      <a href="#about">About</a>
+      <a href="#work">Play</a>
+      <a href="#feedback">Feedback</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-label="Introduction">
+    <h1><span><b>Sam</b></span><span><b>Pitylak</b></span></h1>
+    <div class="hero-foot">
+      <p>I design and build apps and games, and publish each one here as soon as it ships.</p>
+      <div class="stats">
+        <div class="stat"><strong id="count">0</strong><span class="mono">Apps published</span></div>
+        <div class="stat"><strong id="latest">&nbsp;</strong><span class="mono">Latest release</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about" id="about" aria-label="About me">
+    <h2>About<br>me</h2>
+    <div>
+      <p>I'm Sam Pitylak, a developer who builds apps and games from first idea to finished release.</p>
+      <p>Every app I complete is published on this page. The first is Would You Rather Viral Craze, and you can play it below.</p>
+    </div>
+  </section>
+
+  <div class="work-head" id="work"><span class="mono">Selected work</span><span class="mono" id="work-count"></span></div>
+  <main id="exhibits"></main>
+
+  <section class="fb" id="feedback" aria-label="Feedback station">
+    <div class="fb-lcd"><i></i>Feedback station · open</div>
+    <h2>Tell me what<br>you think</h2>
+    <div class="fb-grid">
+      <form id="fb-form" autocomplete="off">
+        <div class="mono">1 · Pick a mood</div>
+        <div class="moods" role="group" aria-label="Mood">
+          <button type="button" class="mood" data-m="love" aria-pressed="false"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><path d="M12 23c2 6 14 6 16 0"/><path d="M13 15l4 2M27 15l-4 2"/></svg>Loved it</button>
+          <button type="button" class="mood" data-m="fun" aria-pressed="false"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><path d="M13 23c3 5 11 5 14 0"/><circle cx="14" cy="16" r="1" fill="currentColor"/><circle cx="26" cy="16" r="1" fill="currentColor"/></svg>Fun</button>
+          <button type="button" class="mood" data-m="meh" aria-pressed="false"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><path d="M13 26h14"/><circle cx="14" cy="16" r="1" fill="currentColor"/><circle cx="26" cy="16" r="1" fill="currentColor"/></svg>Okay</button>
+          <button type="button" class="mood" data-m="fix" aria-pressed="false"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><path d="M13 28c3-5 11-5 14 0"/><circle cx="14" cy="16" r="1" fill="currentColor"/><circle cx="26" cy="16" r="1" fill="currentColor"/></svg>Needs work</button>
+        </div>
+        <label class="mono" for="fb-name">2 · Your name (optional)</label>
+        <input id="fb-name" maxlength="40" placeholder="Anonymous">
+        <label class="mono" for="fb-text">3 · Your message</label>
+        <textarea id="fb-text" maxlength="280" placeholder="What stood out? What would you change?"></textarea>
+        <button class="btn primary" type="submit" id="fb-send">Send feedback →</button>
+        <div class="fb-msg" id="fb-msg" role="status" aria-live="polite"></div>
+      </form>
+      <div>
+        <div class="mono" style="margin-bottom:12px">How it works</div>
+        <div class="empty">Send opens a pre-filled message on GitHub. Press Submit new issue there and it reaches me. A free GitHub account is needed.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="next" aria-label="Next release">
+    <strong>Next release</strong>
+    <span class="mono">Added here the day it ships</span>
+  </section>
+
+  <footer>
+    <span class="mono">Sam Pitylak · Developer</span>
+    <span class="mono">© 2026</span>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   TO ADD A NEW APP: copy one object in PROJECTS, fill it in,
+   and add its images to the "img" folder. Newest goes first.
+   `links` entries with a url show as buttons; leave url "" to hide.
+   ============================================================ */
+const PROJECTS = [
+  {
+    title: "Would You Rather",
+    accent: "Viral Craze",
+    year: 2026,
+    status: "Published",
+    type: "Game",
+    tagline: "Pick a side. Defend it. Four worlds of impossible choices.",
+    description: "Would You Rather Viral Craze is a head-to-head choice game built around four themed worlds: Funny, Adventure, Sports and History. Every world has its own look, so each pair of options lands in a setting that suits it.",
+    facts: [["Genre", "Party / choice game"], ["Worlds", "4 themed categories"], ["Status", "Completed"], ["Year", "2026"]],
+    links: [
+      { label: "Play the game", url: "", primary: true },
+      { label: "Read the SDLC document", url: "" }
+    ],
+    worlds: [
+      { name: "Funny",     img: "img/funny.jpg",     color: "#ff8a2a" },
+      { name: "Adventure", img: "img/adventure.jpg", color: "#43d17c" },
+      { name: "Sports",    img: "img/sports.jpg",    color: "#4aa3ff" },
+      { name: "History",   img: "img/history.jpg",   color: "#e0b050" }
+    ]
+  }
+];
+
+const ROUNDS = 8;
+const QUESTIONS = {
+  Funny: [
+    ["Have a pet chicken that rides a tiny robot", "Have a toaster that wears sunglasses and judges you"],
+    ["Only be able to whisper", "Only be able to shout"],
+    ["Eat tacos for every meal", "Eat pizza for every meal"],
+    ["Ride a unicycle everywhere", "Hop on one foot everywhere"],
+    ["Sneeze glitter every time", "Hiccup bubbles every time"],
+    ["Have spaghetti for hair", "Have sausages for fingers"],
+    ["Walk backwards for a year", "Talk in rhymes for a year"],
+    ["Wear clown shoes to every event", "Wear a cape to every event"],
+    ["Have a pillow fight with 100 people", "Have a food fight with 20 people"],
+    ["Laugh at every joke, even bad ones", "Never laugh at any joke again"]
+  ],
+  Adventure: [
+    ["Explore a hidden jungle temple", "Climb a snowy mountain peak"],
+    ["Cross a rope bridge over the clouds", "Follow a cobblestone path into the unknown"],
+    ["Find a secret treasure map", "Find a magic portal"],
+    ["Sail across an unknown ocean", "Trek across a desert"],
+    ["Camp under the stars for a month", "Sleep in a treehouse for a month"],
+    ["Have a compass that always points to danger", "Have a compass that always points to treasure"],
+    ["Be the first to reach the South Pole", "Be the first to reach the deepest cave"],
+    ["Travel with a loyal dog", "Travel with a clever parrot"],
+    ["Discover a lost city", "Discover a new island"],
+    ["Survive a night alone in the wilderness", "Survive a week with a group of strangers"]
+  ],
+  Sports: [
+    ["Score the winning goal in a final", "Hit the winning home run in a final"],
+    ["Be the best basketball player ever", "Be the best soccer player ever"],
+    ["Play in front of a silent stadium and win", "Play in front of a roaring stadium and lose"],
+    ["Run a marathon every year", "Swim across a lake every summer"],
+    ["Be the fastest sprinter alive", "Be the strongest lifter alive"],
+    ["Win a championship on a team of friends", "Win a championship on a team of stars"],
+    ["Be a legendary coach", "Be a legendary player"],
+    ["Never miss a free throw", "Never miss a penalty kick"],
+    ["Play one sport perfectly", "Play every sport pretty well"],
+    ["Catch the game-winning pass", "Throw the game-winning pass"]
+  ],
+  History: [
+    ["Walk through ancient Rome", "Walk through ancient Egypt"],
+    ["Sail with the Vikings", "Sail with the old explorers"],
+    ["Live in a medieval castle", "Live in a pyramid-age city"],
+    ["Meet a famous knight", "Meet a famous pharaoh"],
+    ["Witness the building of the pyramids", "Witness the opening of the Colosseum"],
+    ["Visit the past for a day", "Visit the future for a day"],
+    ["Be an inventor in the age of gears and machines", "Be a navigator in the age of discovery"],
+    ["Read every lost book from history", "See every lost building from history"],
+    ["Be a Viking sailor", "Be a castle guard"],
+    ["Know the answer to one history mystery", "Know every date in history"]
+  ]
+};
+
+const pad = n => String(n).padStart(2, "0");
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const root = document.getElementById("exhibits");
+
+PROJECTS.forEach((p, i) => {
+  const ex = el("article", "exhibit");
+  ex.setAttribute("aria-label", p.title + " " + p.accent);
+
+  const top = el("div", "exhibit-top");
+  top.append(el("h2", "", esc(p.title) + " <em>" + esc(p.accent) + "</em>"));
+  top.append(el("div", "tags",
+    '<span class="tag mono live">' + esc(p.status) + '</span><span class="tag mono">' + esc(p.type) + '</span><span class="tag mono">' + esc(p.year) + '</span>'));
+  ex.append(top);
+
+  const stage = el("div", "stage");
+  p.worlds.forEach((w, k) => {
+    const im = el("img"); im.src = w.img; im.alt = p.title + " " + w.name + " world"; im.loading = k ? "lazy" : "eager";
+    if (k === 0) im.className = "on";
+    stage.append(im);
+  });
+  const gameBox = el("div", "game"); stage.append(gameBox);
+  ex.append(stage);
+
+  const strip = el("div", "worlds");
+  const btns = p.worlds.map((w, k) => {
+    const b = el("button", "world",
+      '<span class="thumb"><img alt="" src="' + esc(w.img) + '" loading="lazy"></span><span class="cap"><b>' + esc(w.name) + '</b><span class="mono">' + pad(k + 1) + '</span></span>');
+    b.type = "button"; b.style.setProperty("--c", w.color);
+    b.addEventListener("click", () => show(k));
+    strip.append(b); return b;
+  });
+  ex.append(strip);
+
+  let deck = [], idx = 0, picks = [], cur = 0, locked = false;
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function show(k) {
+    cur = k;
+    stage.querySelectorAll(":scope > img").forEach((im, j) => im.classList.toggle("on", j === k));
+    btns.forEach((b, j) => b.setAttribute("aria-pressed", j === k));
+    stage.style.setProperty("--c", p.worlds[k].color);
+    deck = shuffle(QUESTIONS[p.worlds[k].name]).slice(0, ROUNDS); idx = 0; picks = []; locked = false;
+    round();
+  }
+  function head() {
+    return '<div class="g-head"><span class="mono">World ' + pad(cur + 1) + ' · ' + esc(p.worlds[cur].name) + '</span><span class="mono">' + Math.min(idx + 1, deck.length) + ' / ' + deck.length + '</span></div>' +
+      '<div class="g-bar"><i style="width:' + (idx / deck.length * 100) + '%"></i></div>';
+  }
+  function round() {
+    if (idx >= deck.length) return finish();
+    const q = deck[idx]; locked = false;
+    gameBox.innerHTML = head() + '<div class="g-lead">Would you rather</div>' +
+      '<div class="g-opts"><button class="opt" type="button" data-i="0"></button><span class="g-or">OR</span><button class="opt" type="button" data-i="1"></button></div>' +
+      '<div class="g-foot"></div>';
+    const os = gameBox.querySelectorAll(".opt");
+    os.forEach((o, i) => { o.textContent = q[i]; o.addEventListener("click", () => pick(i, os)); });
+    gameBox.style.setProperty("--c", p.worlds[cur].color);
+  }
+  function pick(i, os) {
+    if (locked) return; locked = true;
+    picks.push(deck[idx][i]);
+    os.forEach((o, j) => { o.disabled = true; o.classList.add(j === i ? "picked" : "other"); });
+    const foot = gameBox.querySelector(".g-foot");
+    const last = idx === deck.length - 1;
+    const nb = el("button", "btn primary", last ? "See my picks →" : "Next →"); nb.type = "button";
+    nb.addEventListener("click", () => { idx++; round(); });
+    foot.append(nb); nb.focus({ preventScroll: true });
+  }
+  function finish() {
+    gameBox.style.setProperty("--c", p.worlds[cur].color);
+    gameBox.innerHTML = '<div class="g-end"><div class="g-lead">' + esc(p.worlds[cur].name) + ' world complete</div><h3>Your ' + picks.length + ' picks</h3><p>Play again or jump into another world.</p>' +
+      '<ul class="g-list">' + picks.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul></div>' +
+      '<div class="g-foot"></div>';
+    const foot = gameBox.querySelector(".g-foot");
+    const again = el("button", "btn primary", "Play again"); again.type = "button"; again.addEventListener("click", () => show(cur));
+    const nxt = el("button", "btn", "Next world →"); nxt.type = "button"; nxt.addEventListener("click", () => show((cur + 1) % p.worlds.length));
+    foot.append(again, nxt);
+  }
+  show(0);
+
+  const links = p.links.filter(l => l.url).map(l =>
+    '<a class="btn' + (l.primary ? " primary" : "") + '" href="' + esc(l.url) + '">' + esc(l.label) + ' →</a>').join("");
+  const detail = el("div", "detail");
+  detail.append(el("div", "", '<p class="mono" style="margin-bottom:16px">' + esc(p.tagline) + '</p><p>' + esc(p.description) + '</p>' + (links ? '<div class="links">' + links + '</div>' : "")));
+  detail.append(el("dl", "facts", p.facts.map(f => '<div><dt class="mono">' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd></div>').join("")));
+  ex.append(detail);
+
+  root.append(ex);
+});
+
+document.getElementById("count").textContent = pad(PROJECTS.length);
+document.getElementById("latest").textContent = PROJECTS.length ? PROJECTS[0].year : "";
+document.getElementById("work-count").textContent = PROJECTS.length + (PROJECTS.length === 1 ? " exhibit" : " exhibits");
+
+/* ---------- feedback station ---------- */
+(function () {
+  const ISSUES = "https://github.com/samgames2026/samgames2026.github.io/issues/new";
+  const form = document.getElementById("fb-form"), msg = document.getElementById("fb-msg");
+  const MOODS = { love: "Loved it", fun: "Fun", meh: "Okay", fix: "Needs work" };
+  let mood = "";
+  document.querySelectorAll(".mood").forEach(b => b.addEventListener("click", () => {
+    mood = b.dataset.m;
+    document.querySelectorAll(".mood").forEach(x => x.setAttribute("aria-pressed", x === b));
+  }));
+  form.addEventListener("submit", ev => {
+    ev.preventDefault();
+    const text = document.getElementById("fb-text").value.trim();
+    const name = document.getElementById("fb-name").value.trim() || "Anonymous";
+    if (!mood) { msg.textContent = "Pick a mood first."; return; }
+    if (text.length < 3) { msg.textContent = "Write a short message first."; return; }
+    const url = ISSUES + "?title=" + encodeURIComponent("Feedback: " + MOODS[mood]) +
+      "&body=" + encodeURIComponent("Mood: " + MOODS[mood] + "\nFrom: " + name + "\n\n" + text);
+    msg.textContent = "Opening GitHub. Press Submit new issue there to send it.";
+    window.open(url, "_blank", "noopener");
+  });
+})();
+</script>
+</body>
+</html>
